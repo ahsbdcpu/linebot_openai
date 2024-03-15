@@ -27,18 +27,23 @@ def callback():
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text1 = event.message.text
+    
+    # 定義 ChatGPT 的個性
     personality = {
-        "role": "doctor",
-        "specialty": "pediatrician",
-        "ability": "provide medical advice and answer health-related questions",
-        "tone": "friendly and professional"
+        "role": "doctor", 
+        "specialty": "pediatrician", 
+        "ability": "provide medical advice and answer health-related questions",  
+        "tone": "friendly and professional"  
     }
+    
+    # 使用 ChatGPT 生成回覆
     response = openai.ChatCompletion.create(
         messages=[
-            {"role": "user", "content": text1, "personality": personality}  # 將個性設定傳遞給模型
+            {"role": "user", "content": text1}
         ],
         model="gpt-3.5-turbo-0125",
         temperature=0.5,
+        personality=personality  # 將定義的個性傳遞給模型
     )
     try:
         ret = response['choices'][0]['message']['content'].strip()
