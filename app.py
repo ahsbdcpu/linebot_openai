@@ -12,6 +12,8 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler1 = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
+openai_message_count = 0
+
 @app.route('/callback', methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -25,6 +27,12 @@ def callback():
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text1=event.message.text
+        personality = {
+        "role": "doctor", 
+        "specialty": "pediatrician", 
+        "ability": "provide medical advice and answer health-related questions",  
+        "tone": "friendly and professional"  
+    }
     response = openai.ChatCompletion.create(
         messages=[
             {"role": "user", "content": text1}
