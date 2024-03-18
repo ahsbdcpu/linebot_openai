@@ -1,55 +1,50 @@
 from flask import Flask
 app = Flask(__name__)
-
 from flask import request, abort
-from linebot import LineBotApi, WebhookHandler
+from linebot import  LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import openai
 import os
-
 openai.api_key = os.getenv('OPENAI_API_KEY')
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler1 = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
-openai_message_count = 0
+# 設置計數器初始值
+message_counter = 0
+
 
 @app.route('/callback', methods=['POST'])
 def callback():
+    global message_counter  # 修改計數器的值
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     try:
         handler1.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
+    message_counter += 1  # 每次處理請求時，增加計數器的值
     return 'OK'
 
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    text1 = event.message.text
-    
-    # 定義 ChatGPT 的個性
-    personality = {
-        "role": "doctor", 
-        "specialty": "pediatrician", 
-        "ability": "provide medical advice and answer health-related questions",  
-        "tone": "friendly and professional"  
-    }
-    
-    # 使用 ChatGPT 生成回覆
+    global message_counter  # 訪問計數器的值
+    text1=event.message.text
+    user_profile = {
+        "occupation": "Securities Analyst",  # 將用戶的職業設定為 "分析師"，可以根據需要修改這個值
+        "ability": "stock analysis"   # 將用戶的能力設定為 "分析股票"，可以根據需要修改這個值
     response = openai.ChatCompletion.create(
         messages=[
             {"role": "user", "content": text1}
+            {"role": "system", "content": user_profile}  # 將用戶資料添加到請求中
         ],
         model="gpt-3.5-turbo-0125",
-        temperature=0.5,
-        personality=personality  # 將定義的個性傳遞給模型
-    )
-    try:
-        ret = response['choices'][0]['message']['content'].strip()
+        temperature = 0.5,
+@@ -37,6 +48,7 @@ def handle_message(event):
     except:
         ret = '發生錯誤！'
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=ret))
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=ret))
+    message_counter += 1  # 每次處理時，增加計數器的值
 
 if __name__ == '__main__':
     app.run()
