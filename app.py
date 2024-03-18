@@ -36,15 +36,15 @@ def handle_message(event):
         "ability": "stock analysis"   # 將用戶的能力設定為 "分析股票"，可以根據需要修改這個值
     }
     try:
-        response = openai.ChatCompletion.create(
-            messages=[
-                {"role": "user", "content": text1},
-                {"role": "system", "content": user_profile}  # 將用戶資料添加到請求中
-            ],
-            model="gpt-3.5-turbo-0125",
-            temperature=0.5,
-            ...
-        )
+      response = openai.ChatCompletion.create(
+    messages=[
+        {"role": "user", "content": text1},
+        {"role": "system", "content": user_profile}  # Ensure comma here
+    ],
+    model="gpt-3.5-turbo-0125",
+    temperature=0.5,
+    ...
+)
         ret = response.choices[0].text.strip()
     except Exception as e:
         ret = '發生錯誤！'
