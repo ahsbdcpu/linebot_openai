@@ -25,9 +25,13 @@ def callback():
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text1=event.message.text
+      user_profile = {
+        "occupation": "Securities Analyst",  # 將用戶的職業設定為 "分析師"，可以根據需要修改這個值
+        "ability": "stock analysis"   # 將用戶的能力設定為 "分析股票"，可以根據需要修改這個值
     response = openai.ChatCompletion.create(
         messages=[
             {"role": "user", "content": text1}
+                  {"role": "system", "content": user_profile}  # 將用戶資料添加到請求中
         ],
         model="gpt-3.5-turbo-0125",
         temperature = 0.5,
