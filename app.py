@@ -16,15 +16,13 @@ message_counter = 0  # Initialize message counter
 
 @app.route('/callback', methods=['POST'])
 def callback():
-    global message_counter  # Access the global counter variable
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     try:
         handler1.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
-    message_counter += 1  # Increment message counter for each request
-    return jsonify({"status": "OK", "message_counter": message_counter})  # Return message counter in JSON format
+    return 'OK'
 
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -46,12 +44,14 @@ def handle_message(event):
         model="gpt-3.5-turbo-0125",
         temperature=0.5,
     )
+    
     try:
         ret = response['choices'][0]['message']['content'].strip()
     except:
         ret = '發生錯誤！'
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=ret))
     message_counter += 1  # Increment message counter for each response
+    print("OpenAI共傳訊息:", message_counter)
 
 if __name__ == '__main__':
-    app.run()
+    app.run() 
