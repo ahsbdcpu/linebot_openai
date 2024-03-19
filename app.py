@@ -26,7 +26,7 @@ def callback():
 def handle_message(event):
     text1 = event.message.text
     user_ability = {
-        "職業": "全能醫生",
+        "職業": "doctor",
         "技能": "救治病人",
     }
     response = openai.ChatCompletion.create(
