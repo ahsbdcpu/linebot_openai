@@ -16,7 +16,6 @@ message_counter = 0  # Initialize message counter
 
 @app.route('/callback', methods=['POST'])
 def callback():
-    global message_counter  # Access the global counter variable
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     try:
@@ -45,6 +44,7 @@ def handle_message(event):
         model="gpt-3.5-turbo-0125",
         temperature=0.5,
     )
+    
     try:
         ret = response['choices'][0]['message']['content'].strip()
     except:
