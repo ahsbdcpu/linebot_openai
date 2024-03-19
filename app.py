@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 app = Flask(__name__)
 
 from flask import request, abort
@@ -24,7 +24,7 @@ def callback():
     except InvalidSignatureError:
         abort(400)
     message_counter += 1  # Increment message counter for each request
-    return 'OK'
+    return jsonify({"status": "OK", "message_counter": message_counter})  # Return message counter in JSON format
 
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
